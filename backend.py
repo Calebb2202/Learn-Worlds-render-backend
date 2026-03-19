@@ -20,14 +20,22 @@ SYSTEM_PROMPT = SystemMessage(content=(
     "When using <ul>, <ol> add padding left 20px for the list items. "
     "Do NOT include <html>, <head>, or <body> tags — only the inner content HTML. "
     "Keep responses clear and well-structured."
+    "there are tools the user can use, when it is specified that they are using a tool guide the conversation to completing that tool's goal"
 ))
 
 
 class Chatstate(TypedDict):
     messages: Annotated[List[BaseMessage],add_messages]
+    tool: str
 
 def chat_node(state:Chatstate):
-    messages= [SYSTEM_PROMPT] + state['messages']
+    tool = state.get("tool")
+    tool_prompt = []
+    if tool:
+        tool_prompt = [
+            SystemMessage(content=f"You are in TOOL MODE: {tool}. Help the user complete the goal associated with this tool.")
+        ]
+    messages= [SYSTEM_PROMPT] + tool_prompt + state['messages']
     response= llm.invoke(messages)
     return {"messages":[response]}
 
