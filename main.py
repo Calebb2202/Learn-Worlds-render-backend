@@ -13,10 +13,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/hello")
-def hello():
-    return {"message": "hello world"}
-
 class ChatRequest(BaseModel):
     tool: str = ""
     message: str = ""
@@ -25,7 +21,10 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 def chat(req: ChatRequest):
     result = chatbot.invoke(
-        {"messages": [HumanMessage(content=req.message)]},
+        {    
+            "messages": [HumanMessage(content=req.message)],
+            "tool": req.tool   
+        },
         config={"configurable": {"thread_id": req.thread_id}},
     )
     response = result["messages"][-1].content
