@@ -33,7 +33,7 @@ def chat_node(state:Chatstate):
     tool_prompt = []
     if tool:
         tool_prompt = [
-            SystemMessage(content=f"You are in TOOL MODE: {tool}. Help the user complete the goal associated with this tool.")
+            SystemMessage(content=f"Help me {tool}.")
         ]
     messages= [SYSTEM_PROMPT] + tool_prompt + state['messages']
     response= llm.invoke(messages)
